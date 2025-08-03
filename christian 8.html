@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>VerseLight - Bible Verses & Knowledge</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0; padding: 0;
+    background: #f0f4ff;
+    color: #222;
+    cursor: default;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  body.dark {
+    background: #121417;
+    color: #ddd;
+  }
+  header {
+    background: #2a54c4;
+    color: white;
+    padding: 1rem;
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.8rem;
+    user-select: none;
+  }
+  nav {
+    background: #3366ff;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 0.5rem 0;
+  }
+  nav button {
+    background: #5b7cff;
+    border: none;
+    color: white;
+    padding: 0.6rem 1.3rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.25s ease;
+    position: relative;
+  }
+  nav button.active,
+  nav button:hover {
+    background: #2245aa;
+  }
+  nav button:active {
+    transform: scale(0.95);
+  }
+  main {
+    max-width: 700px;
+    margin: 1.5rem auto;
+    padding: 0 1rem;
+    min-height: 70vh;
+  }
+  section {
+    display: none;
+  }
+  section.active {
+    display: block;
+  }
+  h2 {
+    color: #1a3d9a;
+    margin-bottom: 0.5rem;
+  }
+  #verse {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  #explanation {
+    background: #e6ecff;
+    border-radius: 8px;
+    padding: 1rem;
+    border: 1px solid #a2baff;
+    color: #3a4e8c;
+    margin-bottom: 1.5rem;
+  }
+  body.dark #explanation {
+    background: #24314b;
+    border-color: #445eae;
+    color: #bcc7e9;
+  }
+  #fun-fact {
+    background: #fff8db;
+    border-left: 5px solid #e0a800;
+    padding: 1rem;
+    border-radius: 6px;
+    font-style: italic;
+    margin-bottom: 2rem;
+  }
+  .knowledge-section {
+    margin-bottom: 2rem;
+  }
+  .knowledge-section h3 {
+    margin-bottom: 0.5rem;
+    color: #0d2e8a;
+  }
+  .knowledge-section p {
+    margin: 0.25rem 0 1rem 0;
+    line-height: 1.4;
+  }
+  input[type="text"] {
+    padding: 0.5rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: 1px solid #999;
+    width: 140px;
+    margin-right: 0.5rem;
+  }
+  button#search-church-btn {
+    background: #2a54c4;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.3s ease;
+  }
+  button#search-church-btn:hover {
+    background: #214095;
+  }
+  iframe {
+    width: 100%;
+    height: 400px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-top: 1rem;
+  }
+  label {
+    display: flex;
+    align-items: center;
+    margin-top: 1rem;
+    font-weight: 600;
+    gap: 0.5rem;
+    cursor: pointer;
+    user-select: none;
+  }
+  select, input[type="checkbox"] {
+    cursor: pointer;
+  }
+  #game-url-input {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: 1px solid #999;
+    margin-top: 0.5rem;
+  }
+  #update-game-btn {
+    margin-top: 0.5rem;
+    background: #2a54c4;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.3s ease;
+  }
+  #update-game-btn:hover {
+    background: #214095;
+  }
+  footer {
+    background: #e1e8ff;
+    text-align: center;
+    padding: 1rem;
+    font-size: 0.9rem;
+    color: #333;
+    user-select: none;
+  }
+  body.dark footer {
+    background: #181c27;
+    color: #bbb;
+  }
+  /* Custom cursor */
+  body.custom-cursor {
+    cursor: url('https://cdn-icons-png.flaticon.com/512/60/60725.png') 16 16, auto;
+  }
+</style>
+</head>
+<body>
+<header>VerseLight</header>
+
+<nav>
+  <button class="nav-btn active" data-target="home">Home</button>
+  <button class="nav-btn" data-target="church-finder">Church Finder</button>
+  <button class="nav-btn" data-target="settings">Settings</button>
+  <button class="nav-btn" data-target="about">About</button>
+</nav>
+
+<main>
+  <section id="home" class="active">
+    <h2>Today's Bible Verse</h2>
+    <div id="verse">Loading today's verse...</div>
+    <div id="explanation">Loading verse explanation...</div>
+
+    <div id="fun-fact" class="knowledge-section">
+      <h3>Fun Fact!</h3>
+      <p>The shortest verse in the Bible is <em>"Jesus wept."</em> (John 11:35).</p>
+    </div>
+
+    <div class="knowledge-section">
+      <h3>Did You Know?</h3>
+      <p>The Bible was written over approximately 1,500 years by more than 40 different authors.</p>
+      <p>The original Bible manuscripts were written in Hebrew, Aramaic, and Greek.</p>
+    </div>
+
+    <div class="knowledge-section">
+      <h3>Popular Bible Themes</h3>
+      <p><strong>Faith:</strong> Trusting God even when we can't see the whole picture.</p>
+      <p><strong>Grace:</strong> God's unearned love and mercy toward us.</p>
+      <p><strong>Salvation:</strong> The gift of eternal life through Jesus Christ.</p>
+      <p><strong>Forgiveness:</strong> Letting go of anger and resentment, as God forgives us.</p>
+    </div>
+
+    <div class="knowledge-section">
+      <h3>Top Bible Stories for Kids</h3>
+      <p><em>Noah's Ark:</em> God saves Noah and the animals from the flood.</p>
+      <p><em>David and Goliath:</em> A young shepherd boy defeats a giant with faith and a sling.</p>
+      <p><em>Jesus Feeds 5000:</em> Jesus performs a miracle by feeding thousands with five loaves and two fish.</p>
+      <p><em>The Good Samaritan:</em> A story teaching love and kindness to others, even strangers.</p>
+    </div>
+
+    <div class="knowledge-section">
+      <h3>Famous Bible Quotes</h3>
+      <p>"The Lord is my shepherd; I shall not want." — Psalm 23:1</p>
+      <p>"I can do all things through Christ who strengthens me." — Philippians 4:13</p>
+      <p>"For God so loved the world, that He gave His only Son." — John 3:16</p>
+      <p>"Trust in the Lord with all your heart." — Proverbs 3:5</p>
+    </div>
+
+    <div class="knowledge-section">
+      <h3>How to Study the Bible</h3>
+      <p><strong>Pray first:</strong> Ask God for understanding and wisdom.</p>
+      <p><strong>Read regularly:</strong> Set aside daily time to read and reflect.</p>
+      <p><strong>Use study tools:</strong> Commentaries, dictionaries, and concordances can help.</p>
+      <p><strong>Join a group:</strong> Discussing with others deepens your understanding.</p>
+    </div>
+
+    <div class="knowledge-section">
+      <h3>Bible Trivia</h3>
+      <p>Q: Who was the oldest man mentioned in the Bible?<br /><strong>A:</strong> Methuselah, who lived 969 years.</p>
+      <p>Q: What was the first miracle Jesus performed?<br /><strong>A:</strong> Turning water into wine at a wedding in Cana.</p>
+      <p>Q: How many books are in the Bible?<br /><strong>A:</strong> 66 books (39 Old Testament, 27 New Testament).</p>
+    </div>
+
+    <h2>Bible Games & Quizzes</h2>
+    <p>Try out these fun Bible quizzes and games below:</p>
+    <iframe
+      id="game-frame"
+      src="https://www.educaplay.com/game/15288419-bible_boogie_fill_in_the_blank_game.html"
+      loading="lazy"
+      title="Bible Fill-in-the-Blank Game"
+      style="width:100%; height:400px; border:none; border-radius:8px;"
+    ></iframe>
+    <p style="margin-top:1rem;">You can change the game by entering a URL in settings.</p>
+  </section>
+
+  <section id="church-finder">
+    <h2>Find Churches Near You</h2>
+    <input id="zip-input" type="text" maxlength="5" placeholder="Enter ZIP code" />
+    <button id="search-church-btn">Search</button>
+
+    <iframe
+      id="church-map"
+      src="https://www.google.com/maps/embed/v1/search?q=churches+near+10001&key=AIzaSyB07LZIr-ukRZy5XCQZ2X15hO8ArufkLm4"
+      allowfullscreen
+      loading="lazy"
+      title="Church Finder Map"
+    ></iframe>
+  </section>
+
+  <section id="settings">
+    <h2>Settings</h2>
+
+    <label>
+      <input type="checkbox" id="cursor-toggle" />
+      Use Custom Cursor
+    </label>
+
+    <label for="theme-select" style="margin-top: 1rem;">Theme:</label>
+    <select id="theme-select">
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+    </select>
+
+    <label for="game-url-input" style="margin-top:1rem; font-weight:bold;">
+      Bible Game URL:
+    </label>
+    <input
+      type="text"
+      id="game-url-input"
+      placeholder="Enter URL to Bible Game (iframe supported)"
+    />
+    <button id="update-game-btn">Update Game</button>
+  </section>
+
+  <section id="about">
+    <h2>About VerseLight</h2>
+    <p>
+      VerseLight offers daily Bible verses with explanations, helps you find local churches,
+      and lets you play fun Bible games. Designed to inspire, educate, and entertain kids and adults alike.
+    </p>
+    <p>Built with love ❤️ and faith.</p>
+  </section>
+</main>
+
+<footer>
+  &copy; 2025 VerseLight | Powered by BibleGateway & Google Maps
+</footer>
+
+<audio id="click-sound" src="https://cdn-icons-png.flaticon.com/512/64/64113.mp3" preload="auto"></audio>
+
+<script>
+  // Navigation buttons and sections
+  const navButtons = document.querySelectorAll(".nav-btn");
+  const sections = document.querySelectorAll("main section");
+  const clickSound = document.getElementById("click-sound");
+
+  navButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      clickSound.currentTime = 0;
+      clickSound.play();
+
+      navButtons.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      const target = btn.getAttribute("data-target");
+      sections.forEach((sec) => {
+        sec.classList.toggle("active", sec.id === target);
+      });
+    });
+  });
+
+  // Verses and explanations as objects in an array
+  const versesData = [
+    {
+      verse: "Jeremiah 29:11 — 'For I know the plans I have for you,' declares the Lord...",
+      explanation: "God has great plans for you—plans to give you hope and a future.",
+    },
+    {
+      verse: "Philippians 4:13 — I can do all things through Christ who strengthens me.",
+      explanation: "Through Jesus, you have the strength to face anything.",
+    },
+    {
+      verse: "Psalm 23:1 — The Lord is my shepherd; I shall not want.",
+      explanation: "Like a shepherd cares for sheep, God cares for you.",
+    },
+    {
+      verse: "Proverbs 3:5 — Trust in the Lord with all your heart...",
+      explanation: "Don’t rely only on your thoughts—God will guide you.",
+    },
+    {
+      verse: "Joshua 1:9 — Be strong and courageous...",
+      explanation: "Be brave and trust God—He’s always with you!",
+    },
+    {
+      verse: "Romans 8:28 — And we know that in all things God works for the good...",
+      explanation: "Even when things seem tough, God is working behind the scenes for your good.",
+    },
+    {
+      verse: "Isaiah 40:31 — But those who hope in the Lord will renew their strength...",
+      explanation: "When you feel weak, trust God to give you strength and energy.",
+    },
+    {
+      verse: "Matthew 11:28 — Come to me, all who labor and are heavy laden...",
+      explanation: "Jesus invites you to find rest and peace in Him when life is hard.",
+    },
+    {
+      verse: "John 3:16 — For God so loved the world, that He gave His only Son...",
+      explanation: "God’s love is so big, He sent Jesus to save us all.",
+    },
+    {
+      verse: "Galatians 5:22-23 — The fruit of the Spirit is love, joy, peace...",
+      explanation: "God helps us grow in good qualities like love, patience, and kindness.",
+    },
+    {
+      verse: "1 Corinthians 13:4-7 — Love is patient, love is kind...",
+      explanation: "True love shows patience and kindness, never giving up.",
+    },
+    {
+      verse: "Ephesians 2:8 — For by grace you have been saved through faith...",
+      explanation: "Salvation is a gift from God, not something we earn.",
+    },
+    {
+      verse: "Hebrews 11:1 — Now faith is the assurance of things hoped for...",
+      explanation: "Faith means trusting God even when we can’t see the whole plan.",
+    },
+    {
+      verse: "Psalm 46:1 — God is our refuge and strength, a very present help in trouble.",
+      explanation: "God is always there to protect and help you in hard times.",
+    },
+    {
+      verse: "Matthew 28:19 — Go therefore and make disciples of all nations...",
+      explanation: "Jesus calls us to share His love and message with everyone.",
+    },
+    {
+      verse: "James 1:5 — If any of you lacks wisdom, let him ask God...",
+      explanation: "God will gladly give you wisdom if you ask Him.",
+    },
+    {
+      verse: "Romans 12:2 — Do not be conformed to this world, but be transformed...",
+      explanation: "Let God change your heart to live in a way that pleases Him.",
+    },
+    {
+      verse: "Psalm 119:105 — Your word is a lamp to my feet and a light to my path.",
+      explanation: "God’s word guides us and helps us make good choices.",
+    },
+    {
+      verse: "Colossians 3:23 — Whatever you do, work heartily, as for the Lord...",
+      explanation: "Do your best in everything because you are serving God.",
+    },
+    {
+      verse: "1 Peter 5:7 — Cast all your anxieties on Him, because He cares for you.",
+      explanation: "Give your worries to God and trust Him to take care of you.",
+    },
+    {
+      verse: "2 Timothy 1:7 — For God gave us a spirit not of fear but of power...",
+      explanation: "God gives you courage and strength, not fear.",
+    },
+    {
+      verse: "Psalm 34:18 — The Lord is near to the brokenhearted and saves the crushed in spirit.",
+      explanation: "God is close when you feel sad or broken.",
+    },
+    {
+      verse: "John 14:6 — Jesus said, 'I am the way, and the truth, and the life.'",
+      explanation: "Jesus is the only way to God and eternal life.",
+    },
+    {
+      verse: "Proverbs 16:3 — Commit your work to the Lord, and your plans will be established.",
+      explanation: "When you trust God with your plans, He helps you succeed.",
+    },
+    {
+      verse: "Philippians 4:6 — Do not be anxious about anything, but in everything by prayer...",
+      explanation: "Bring your worries to God through prayer and trust Him.",
+    },
+    {
+      verse: "Isaiah 41:10 — Fear not, for I am with you; be not dismayed...",
+      explanation: "God promises to be with you and give you strength.",
+    },
+    {
+      verse: "Matthew 5:14 — You are the light of the world...",
+      explanation: "As followers of Jesus, you shine His light to others.",
+    },
+    {
+      verse: "Romans 10:9 — If you confess with your mouth that Jesus is Lord...",
+      explanation: "Confessing Jesus as Lord leads to salvation.",
+    },
+    {
+      verse: "Psalm 37:4 — Delight yourself in the Lord, and He will give you the desires of your heart.",
+      explanation: "Find joy in God, and He will bless your desires.",
+    },
+    {
+      verse: "Galatians 6:9 — And let us not grow weary of doing good...",
+      explanation: "Keep doing good things; God will reward you in time.",
+    },
+    {
+      verse: "John 15:5 — I am the vine; you are the branches...",
+      explanation: "Stay connected to Jesus to live a fruitful life.",
+    }
+  ];
+
+  // Get day of year (1-365)
+  function getDayOfYear(date = new Date()) {
+    const start = new Date(date.getFullYear(), 0, 0);
+    const diff = date - start + (start.getTimezoneOffset() - date.getTimezoneOffset()) * 60000;
+    return Math.floor(diff / 86400000);
+  }
+
+  // Load today's verse and explanation
+  function loadVerseOfDay() {
+    const dayIndex = getDayOfYear() % versesData.length;
+    const { verse, explanation } = versesData[dayIndex];
+    document.getElementById("verse").textContent = verse;
+    document.getElementById("explanation").textContent = explanation;
+  }
+
+  loadVerseOfDay();
+
+  // Church finder
+  const btnChurch = document.getElementById("search-church-btn");
+  const zipInput = document.getElementById("zip-input");
+  const churchMap = document.getElementById("church-map");
+
+  btnChurch.addEventListener("click", () => {
+    const zip = zipInput.value.trim();
+    if (/^\d{5}$/.test(zip)) {
+      const query = encodeURIComponent(`churches near ${zip}`);
+      const apiKey = "AIzaSyB07LZIr-ukRZy5XCQZ2X15hO8ArufkLm4";
+      const url = `https://www.google.com/maps/embed/v1/search?key=${apiKey}&q=${query}`;
+      churchMap.src = url;
+    } else {
+      alert("Please enter a valid 5-digit ZIP code.");
+    }
+  });
+
+  // Settings logic
+  const themeSelect = document.getElementById("theme-select");
+  const cursorToggle = document.getElementById("cursor-toggle");
+  const gameUrlInput = document.getElementById("game-url-input");
+  const updateGameBtn = document.getElementById("update-game-btn");
+  const gameFrame = document.getElementById("game-frame");
+
+  // Load saved settings or defaults
+  function loadSettings() {
+    const theme = localStorage.getItem("theme") || "light";
+    const cursor = localStorage.getItem("customCursor") === "true";
+    const gameUrl = localStorage.getItem("gameUrl") || "https://www.educaplay.com/game/15288419-bible_boogie_fill_in_the_blank_game.html";
+
+    themeSelect.value = theme;
+    cursorToggle.checked = cursor;
+    gameUrlInput.value = gameUrl;
+
+    applyTheme(theme);
+    applyCursor(cursor);
+    gameFrame.src = gameUrl;
+  }
+
+  // Apply theme to body
+  function applyTheme(theme) {
+    if (theme === "dark") {
+      document.body.classList.add("dark");
+    } else {
+      document.body.classList.remove("dark");
+    }
+  }
+
+  // Apply custom cursor
+  function applyCursor(enabled) {
+    if (enabled) {
+      document.body.classList.add("custom-cursor");
+    } else {
+      document.body.classList.remove("custom-cursor");
+    }
+  }
+
+  themeSelect.addEventListener("change", (e) => {
+    const val = e.target.value;
+    localStorage.setItem("theme", val);
+    applyTheme(val);
+  });
+
+  cursorToggle.addEventListener("change", (e) => {
+    const val = e.target.checked;
+    localStorage.setItem("customCursor", val);
+    applyCursor(val);
+  });
+
+  updateGameBtn.addEventListener("click", () => {
+    const url = gameUrlInput.value.trim();
+    if (url) {
+      localStorage.setItem("gameUrl", url);
+      gameFrame.src = url;
+      alert("Game URL updated!");
+    } else {
+      alert("Please enter a valid URL.");
+    }
+  });
+
+  loadSettings();
+</script>
+</body>
+</html>
